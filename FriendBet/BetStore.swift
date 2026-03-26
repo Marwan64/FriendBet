@@ -163,8 +163,6 @@ final class BetStore: ObservableObject {
                 }
 
                 self.upsertLocalGroup(group)
-                self.players = [self.makeCurrentUserProfile()]
-                self.bets = []
                 self.selectGroup(id: groupID)
                 self.isLoading = false
             }
@@ -245,8 +243,6 @@ final class BetStore: ObservableObject {
                                     }
 
                                     self.upsertLocalGroup(group)
-                                    self.players = self.players.contains(where: { $0.id == self.currentUserID }) ? self.players : [self.makeCurrentUserProfile()]
-                                    self.bets = []
                                     self.selectGroup(id: group.id)
                                     self.isLoading = false
                                 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 struct OnboardingView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
@@ -54,17 +55,31 @@ struct OnboardingView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24)
 
-                    Button(page == pages.count - 1 ? "Enter FriendBet" : "Continue") {
-                        if page == pages.count - 1 {
-                            authViewModel.signInDemo(name: displayName)
-                        } else {
+                    if page == pages.count - 1 {
+                        SignInWithAppleButton(.signIn) { request in
+                            request.requestedScopes = [.fullName, .email]
+                            request.nonce = authViewModel.prepareAppleSignInRequest(name: displayName)
+                        } onCompletion: { result in
+                            switch result {
+                            case .success(let authorization):
+                                authViewModel.handleAppleAuthorization(authorization)
+                            case .failure(let error):
+                                authViewModel.handleAppleError(error)
+                            }
+                        }
+                        .signInWithAppleButtonStyle(.white)
+                        .frame(height: 54)
+                        .cornerRadius(16)
+                        .padding(.horizontal, 24)
+                        .disabled(authViewModel.isBusy)
+                    } else {
+                        Button("Continue") {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.9)) {
                                 page += 1
                             }
                         }
+                        .buttonStyle(PrimaryButtonStyle())
                     }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .disabled(authViewModel.isBusy)
 
                     Button("Preview the app") {
                         authViewModel.signInDemo(name: displayName)
