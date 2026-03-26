@@ -20,6 +20,7 @@
 		A1000011 /* BetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011 /* BetStore.swift */; };
 		A1000012 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012 /* AuthViewModel.swift */; };
 		A1000013 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013 /* OnboardingView.swift */; };
+		A1000014 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A2000014 /* GoogleService-Info.plist */; };
 		FB100001 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FB200001 /* FirebaseCore */; };
 		FB100002 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FB200002 /* FirebaseAuth */; };
 		FB100003 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FB200003 /* FirebaseFirestore */; };
@@ -39,6 +40,7 @@
 		A2000011 /* BetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetStore.swift; sourceTree = "<group>"; };
 		A2000012 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		A2000013 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A2000014 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		A3000001 /* FriendBet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FriendBet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -80,6 +82,7 @@
 				A2000011 /* BetStore.swift */,
 				A2000012 /* AuthViewModel.swift */,
 				A2000013 /* OnboardingView.swift */,
+				A2000014 /* GoogleService-Info.plist */,
 			);
 			path = FriendBet;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1000014 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
