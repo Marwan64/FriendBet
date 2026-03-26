@@ -57,6 +57,19 @@ struct Player: Identifiable, Hashable, Codable {
     }
 }
 
+struct Group: Identifiable, Hashable, Codable {
+    let id: String
+    var name: String
+    var inviteCode: String
+    var ownerID: String
+    var accentHex: String
+    var memberIDs: [String]
+    var memberCount: Int
+    var createdAt: Date
+
+    var accent: Color { Color(hex: accentHex) }
+}
+
 struct Bet: Identifiable, Hashable, Codable {
     let id: String
     var title: String
@@ -108,6 +121,46 @@ extension Player {
             "wins": wins,
             "streak": streak,
             "accentHex": accentHex
+        ]
+    }
+}
+
+extension Group {
+    static func fromSnapshot(_ document: DocumentSnapshot) -> Group? {
+        guard let data = document.data() else { return nil }
+        guard
+            let name = data["name"] as? String,
+            let inviteCode = data["inviteCode"] as? String,
+            let ownerID = data["ownerID"] as? String
+        else {
+            return nil
+        }
+
+        let createdAt = (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+        let memberIDs = data["memberIDs"] as? [String] ?? []
+        let memberCount = data["memberCount"] as? Int ?? memberIDs.count
+
+        return Group(
+            id: document.documentID,
+            name: name,
+            inviteCode: inviteCode,
+            ownerID: ownerID,
+            accentHex: data["accentHex"] as? String ?? "87B7FF",
+            memberIDs: memberIDs,
+            memberCount: memberCount,
+            createdAt: createdAt
+        )
+    }
+
+    var firestoreData: [String: Any] {
+        [
+            "name": name,
+            "inviteCode": inviteCode,
+            "ownerID": ownerID,
+            "accentHex": accentHex,
+            "memberIDs": memberIDs,
+            "memberCount": memberCount,
+            "createdAt": Timestamp(date: createdAt)
         ]
     }
 }

@@ -11,6 +11,10 @@ struct NewBetView: View {
     @State private var category: BetCategory = .sports
     @State private var opponentID: String?
 
+    private var canPublish: Bool {
+        store.activeGroup != nil && opponentID != nil
+    }
+
     var body: some View {
         ZStack {
             AppGradientBackground()
@@ -24,6 +28,22 @@ struct NewBetView: View {
                     Text("Clear stakes, strong copy, and the right opponent make the app feel alive.")
                         .font(.body)
                         .foregroundStyle(.white.opacity(0.72))
+
+                    if let activeGroup = store.activeGroup {
+                        SecondaryChip(text: "Posting to \(activeGroup.name)", systemImage: "person.3.fill")
+                    } else {
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Create or join a group first")
+                                    .font(.headline)
+                                    .foregroundStyle(.white)
+
+                                Text("Bets now live inside private groups, so you need a group before you can publish one.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.white.opacity(0.72))
+                            }
+                        }
+                    }
 
                     GlassCard {
                         VStack(alignment: .leading, spacing: 16) {
@@ -51,7 +71,7 @@ struct NewBetView: View {
                             labeledField("Opponent") {
                                 Picker("Opponent", selection: $opponentID) {
                                     Text("Select a player").tag(String?.none)
-                                    ForEach(store.players.filter { $0.id != store.currentUserID }) { player in
+                                    ForEach(store.availableOpponents) { player in
                                         Text(player.name).tag(Optional(player.id))
                                     }
                                 }
@@ -79,8 +99,8 @@ struct NewBetView: View {
                         dismiss()
                     }
                     .buttonStyle(PrimaryButtonStyle())
-                    .disabled(opponentID == nil)
-                    .opacity(opponentID == nil ? 0.5 : 1)
+                    .disabled(!canPublish)
+                    .opacity(canPublish ? 1 : 0.5)
                 }
                 .padding(20)
                 .padding(.bottom, 30)

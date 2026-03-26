@@ -10,26 +10,44 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
 
-                if let featuredBet = store.featuredBet,
-                   let challenger = store.player(for: featuredBet.challengerID),
-                   let opponent = store.player(for: featuredBet.opponentID) {
-                    BetHeroCard(bet: featuredBet, challenger: challenger, opponent: opponent)
-                }
+                if store.activeGroup == nil {
+                    emptyGroupState
+                } else {
+                    if let featuredBet = store.featuredBet,
+                       let challenger = store.player(for: featuredBet.challengerID),
+                       let opponent = store.player(for: featuredBet.opponentID) {
+                        BetHeroCard(bet: featuredBet, challenger: challenger, opponent: opponent)
+                    }
 
-                statGrid
+                    statGrid
 
-                SectionHeader(title: "Trending Bets", subtitle: "The bets pulling the most attention right now.")
-                    .padding(.top, 8)
+                    SectionHeader(title: "Trending Bets", subtitle: "The bets pulling the most attention right now.")
+                        .padding(.top, 8)
 
-                ForEach(store.activeBets.prefix(3)) { bet in
-                    if let challenger = store.player(for: bet.challengerID),
-                       let opponent = store.player(for: bet.opponentID) {
-                        NavigationLink {
-                            BetDetailView(bet: bet)
-                        } label: {
-                            BetRowCard(bet: bet, challenger: challenger, opponent: opponent)
+                    if store.activeBets.isEmpty {
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("No bets in this group yet")
+                                    .font(.headline)
+                                    .foregroundStyle(.white)
+
+                                Text("Invite your friends, then publish the first bet to make the group feel alive.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.white.opacity(0.72))
+                            }
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        ForEach(store.activeBets.prefix(3)) { bet in
+                            if let challenger = store.player(for: bet.challengerID),
+                               let opponent = store.player(for: bet.opponentID) {
+                                NavigationLink {
+                                    BetDetailView(bet: bet)
+                                } label: {
+                                    BetRowCard(bet: bet, challenger: challenger, opponent: opponent)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
                     }
                 }
             }
@@ -47,6 +65,8 @@ struct HomeView: View {
                         .padding(12)
                         .background(Color(hex: "F4C95D"), in: Circle())
                 }
+                .disabled(store.activeGroup == nil || store.availableOpponents.isEmpty)
+                .opacity(store.activeGroup == nil || store.availableOpponents.isEmpty ? 0.45 : 1)
             }
 
             ToolbarItem(placement: .topBarLeading) {
@@ -87,6 +107,17 @@ struct HomeView: View {
                     SecondaryChip(text: "\(store.currentUser.points) pts", systemImage: "star.fill")
                 }
 
+                if let activeGroup = store.activeGroup {
+                    HStack {
+                        SecondaryChip(text: activeGroup.name, systemImage: "person.3.fill")
+                        SecondaryChip(text: activeGroup.inviteCode, systemImage: "number")
+                    }
+                } else {
+                    Text("Create or join a private group before your bets and players start syncing.")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.72))
+                }
+
                 if let syncError = store.syncError {
                     Text(syncError)
                         .font(.footnote)
@@ -100,8 +131,24 @@ struct HomeView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
             StatCard(title: "Active bets", value: "\(store.activeBets.count)", caption: "Closing over the next two weeks", color: Color(hex: "5FE7C4"))
             StatCard(title: "Your record", value: "\(store.currentUser.wins)-4", caption: "Wins this season", color: Color(hex: "FF8C68"))
-            StatCard(title: "League pot", value: store.totalPotDisplay, caption: "Total bragging rights in motion", color: Color(hex: "F4C95D"))
+            StatCard(title: "Group pot", value: store.totalPotDisplay, caption: "Total bragging rights in motion", color: Color(hex: "F4C95D"))
             StatCard(title: "Pending invites", value: "\(store.pendingBets.count)", caption: "Needs response from friends", color: Color(hex: "87B7FF"))
+        }
+    }
+
+    private var emptyGroupState: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("No group selected yet")
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .foregroundStyle(.white)
+
+                Text("Head to the Players tab to create your own private group or join a friend with an invite code.")
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.72))
+
+                SecondaryChip(text: "Private circles only", systemImage: "lock.fill")
+            }
         }
     }
 }
